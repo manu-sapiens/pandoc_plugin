@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Get the current operating system
+OS="$(uname)"
+
+# Only run the download and extraction if the OS is macOS
+if [[ "$OS" == "Darwin" ]]; then
+  echo "Downloading Uninstall script"
+  curl -LOk https://raw.githubusercontent.com/jgm/pandoc/main/macos/uninstall-pandoc.pl
+  echo "Uninstalling..."
+  perl uninstall-pandoc.pl.
+
+else
+  echo "This script is only intended to run on macOS."
+fi

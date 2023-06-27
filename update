@@ -1,0 +1,38 @@
+#!/bin/bash
+if [ -d "./venv" ]; then
+	source ./venv/bin/activate
+	python -m ensurepip --upgrade
+	python -m pip install --upgrade "pip>=22.3.1,<23.1.*"
+	python -m pip install -r requirements.txt
+
+  # Get the current operating system
+  OS="$(uname)"
+
+  # Only run the download and extraction if the OS is macOS
+  if [[ "$OS" == "Darwin" ]]; then
+    echo "Downloading the pandoc pkg"
+    curl -LOk https://github.com/jgm/pandoc/releases/download/3.1.4/pandoc-3.1.4-x86_64-macOS.pkg
+
+    # Install the package using the installer command
+    echo "Installing the pandoc pkg for the user only"
+    installer -pkg pandoc-3.1.4-x86_64-macOS.pkg -target ~
+
+    # Cleanup by removing the downloaded package file
+    rm pandoc-3.1.4-x86_64-macOS.pkg
+
+    echo "Installing TinyText for creating PDFs"
+    curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+
+      # Check if the user has write permission to /usr/local/bin
+      if [ -w "/usr/local/bin" ]; then
+        echo "You have write permission to /usr/local/bin."
+      else
+        echo "You do not have write permission to /usr/local/bin. Trying to fix that..."
+        echo "See this discussion: https://github.com/rstudio/tinytex/issues/188"
+      fi    
+  else
+    echo "This script is only intended to run on macOS."
+  fi
+else
+	echo "No VENV found. Please run ./install first."
+fi
